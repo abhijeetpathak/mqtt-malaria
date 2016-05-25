@@ -69,7 +69,7 @@ def _worker(options, proc_num, auth=None):
             cid = auth.split(":")[0]
     else:
         # FIXME - add auth support here too dummy!
-        ts = beem.load.TrackingSender(options.host, options.port, cid)
+        ts = beem.load.TrackingSender(options.host, options.port, cid, options.delayed_connect)
 
     # Provide a custom generator
     #msg_gen = my_custom_msg_generator(options.msg_count)
@@ -134,7 +134,11 @@ def add_args(subparsers):
     parser.add_argument(
         "--thread_ratio", type=int, default=1,
         help="Threads per process (bridged multiprocessing) WARNING! VERY ALPHA!")
-
+    parser.add_argument(
+        "-d", "--delayed_connect", action="store_true",
+        help="""Don't create all the connections to the MQTT server at once. 
+        Use delay between establishing connections. A random delay of 1 to 30 seconds is used.""")
+        
     parser.add_argument(
         "-b", "--bridge", action="store_true",
         help="""Instead of connecting directly to the target, fire up a

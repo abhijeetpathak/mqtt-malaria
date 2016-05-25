@@ -32,6 +32,7 @@ from __future__ import division
 import logging
 import math
 import time
+import random
 
 import paho.mqtt.client as mqtt
 
@@ -60,7 +61,7 @@ class TrackingSender():
     """
     msg_statuses = {}
 
-    def __init__(self, host, port, cid):
+    def __init__(self, host, port, cid, delayed_connect):
         self.cid = cid
         self.log = logging.getLogger(__name__ + ":" + cid)
         self.mqttc = mqtt.Client(cid)
@@ -68,6 +69,11 @@ class TrackingSender():
         # TODO - you _probably_ want to tweak this
         if hasattr(self.mqttc, "max_inflight_messages_set"):
             self.mqttc.max_inflight_messages_set(200)
+        
+        if (delayed_connect):
+            random.seed() 
+            time.sleep(random.randint(1,30))
+            
         rc = self.mqttc.connect(host, port, 60)
         if rc:
             raise Exception("Couldn't even connect! ouch! rc=%d" % rc)
